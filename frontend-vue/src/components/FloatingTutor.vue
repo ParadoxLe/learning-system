@@ -11,7 +11,7 @@
       <div v-if="visible" class="tutor-panel">
         <div class="tutor-panel-header">
           <span>🤖 智能辅导助手</span>
-          <span style="font-size:0.75rem; color:#999;">TutorAgent 随叫随到</span>
+          <span style="font-size:0.75rem; color:#A89880;">TutorAgent 随叫随到</span>
         </div>
 
         <!-- 画像上下文摘要 -->
@@ -22,17 +22,17 @@
           <span v-if="kb.level" class="context-chip">
             {{ LEVEL[kb.level] || kb.level }}
           </span>
-          <span v-if="kb.weak_points?.length" class="context-chip" style="background:#fff3e0;color:#e65100;">
+          <span v-if="kb.weak_points?.length" class="context-chip" style="background:rgba(200,150,62,0.12);color:#8B6F3D;">
             ⚠️ {{ kb.weak_points[0] }}
           </span>
         </div>
-        <div v-else class="tutor-context-mini" style="background:#fff8e6;color:#b0780a;">
+        <div v-else class="tutor-context-mini" style="background:#FBF3E0;color:#8B6F3D;">
           未构建画像，使用通用模式
         </div>
 
         <!-- 聊天区 -->
         <div class="tutor-chat" ref="chatContainer">
-          <div v-if="messages.length === 0" style="color:#bbb; font-size:0.85rem; text-align:center; padding:1.5rem 0;">
+          <div v-if="messages.length === 0" style="color:#A89880; font-size:0.85rem; text-align:center; padding:1.5rem 0;">
             学习中遇到问题？直接问我
           </div>
           <div

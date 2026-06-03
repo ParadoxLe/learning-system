@@ -124,6 +124,20 @@ export function evaluateLearning(studentId, learningData = {}) {
   return api.post('/assessment/evaluate', { student_id: studentId, learning_data: learningData }).then(r => r.data)
 }
 
+// Knowledge Graph
+export function getKnowledgeGraph(studentId) {
+  return api.get(`/knowledge-graph/${studentId}`).then(r => r.data)
+}
+
+// Quiz
+export function generateQuiz(studentId, count = 5) {
+  return api.post('/quiz/generate', { student_id: studentId, count }).then(r => r.data)
+}
+
+export function submitQuiz(studentId, answers, questions) {
+  return api.post('/quiz/submit', { student_id: studentId, answers, questions }).then(r => r.data)
+}
+
 // Library
 export function uploadPdf(studentId, file) {
   const form = new FormData()

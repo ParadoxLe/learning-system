@@ -1,0 +1,28 @@
+# Environment
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Node
+node_modules/
+frontend-vue/dist/
+
+# IDE
+.idea/
+.vscode/
+
+# Data
+data/learning_system.db
+data/chroma_db/
+data/uploads/
+
+# Docker
+Dockerfile.*
+docker-compose.yml
+.dockerignore
+nginx.conf
+deploy.sh

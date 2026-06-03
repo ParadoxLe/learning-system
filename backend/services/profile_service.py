@@ -40,7 +40,7 @@ class ProfileService:
         return result
 
     def chat_stream(self, db: Session, student_id: int, message: str):
-        """Streaming profile chat — streams tokens only for follow-up questions, not for JSON profile."""
+        """Streaming profile chat — streams tokens for natural language, skips JSON tokens."""
         student = db.query(Student).filter(Student.id == student_id).first()
         if not student:
             yield {"status": "error", "message": f"学生 {student_id} 不存在"}
@@ -50,6 +50,7 @@ class ProfileService:
         tokens = []
         full_text = ""
         final_result = None
+        streaming = True  # Start streaming; stop if we detect JSON
 
         for item in self.agent.build_profile_stream(message, history):
             if isinstance(item, dict):
@@ -57,6 +58,11 @@ class ProfileService:
             else:
                 tokens.append(item)
                 full_text += item
+                # If text starts looking like JSON, stop streaming to avoid showing raw JSON
+                if streaming and full_text.lstrip().startswith('{'):
+                    streaming = False
+                if streaming:
+                    yield item
 
         if final_result is None:
             final_result = {"status": "need_more_info", "message": full_text}
@@ -73,13 +79,14 @@ class ProfileService:
             self._save_profile(db, student_id, final_result["profile"])
             yield final_result
         else:
-            # Replay buffered tokens for follow-up questions (streaming feel)
-            for token in tokens:
-                yield token
+            if not streaming:
+                # Was buffered (looked like JSON but wasn't) — replay
+                for token in tokens:
+                    yield token
             yield final_result
 
     async def chat_stream_async(self, db: Session, student_id: int, message: str):
-        """Async streaming profile chat — streams tokens only for follow-up questions, not for JSON profile."""
+        """Async streaming profile chat — streams tokens for natural language, skips JSON tokens."""
         student = db.query(Student).filter(Student.id == student_id).first()
         if not student:
             yield {"status": "error", "message": f"学生 {student_id} 不存在"}
@@ -89,6 +96,7 @@ class ProfileService:
         tokens = []
         full_text = ""
         final_result = None
+        streaming = True
 
         async for item in self.agent.build_profile_stream_async(message, history):
             if isinstance(item, dict):
@@ -96,6 +104,10 @@ class ProfileService:
             else:
                 tokens.append(item)
                 full_text += item
+                if streaming and full_text.lstrip().startswith('{'):
+                    streaming = False
+                if streaming:
+                    yield item
 
         if final_result is None:
             final_result = {"status": "need_more_info", "message": full_text}
@@ -112,8 +124,9 @@ class ProfileService:
             self._save_profile(db, student_id, final_result["profile"])
             yield final_result
         else:
-            for token in tokens:
-                yield token
+            if not streaming:
+                for token in tokens:
+                    yield token
             yield final_result
 
     def get_profile(self, db: Session, student_id: int):  # -> dict | None (Python 3.10+)

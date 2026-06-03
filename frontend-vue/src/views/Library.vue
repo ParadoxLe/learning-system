@@ -219,11 +219,17 @@ async function openFile(f) {
 
 async function handleDelete(f) {
   try {
-    await ElMessageBox.confirm(`确认删除「${f.filename}」？`, '删除文件', {
-      confirmButtonText: '删除',
-      cancelButtonText: '取消',
-      type: 'warning',
-    })
+    await ElMessageBox.confirm(
+      `<div class="export-msg">
+        <span class="export-msg-icon">🗑️</span>
+        <div class="export-msg-body">
+          <div class="export-msg-title">${f.filename}</div>
+          <div class="export-msg-meta">确认删除该文件？<b>此操作不可恢复</b>。</div>
+        </div>
+      </div>`,
+      '删除文件',
+      { confirmButtonText: '🗑️ 删除', cancelButtonText: '取消', dangerouslyUseHTMLString: true, customClass: 'export-confirm-dialog' }
+    )
     await deleteFile(f.id, store.currentStudentId)
     ElMessage.success('已删除')
     if (selectedFile.value?.id === f.id) {
@@ -261,7 +267,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   height: calc(100vh - 100px);
-  padding: 0 1.2rem 0.8rem;
+  padding: 0.6rem 1.2rem 0.8rem;
 }
 
 /* ===== Main split ===== */

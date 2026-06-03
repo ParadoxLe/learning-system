@@ -185,6 +185,6 @@ async function askQuestion() {
 
 <style scoped>
 .tutoring-page {
-  padding: 0 1.2rem 0.8rem;
+  padding: 0.6rem 1.2rem 0.8rem;
 }
 </style>

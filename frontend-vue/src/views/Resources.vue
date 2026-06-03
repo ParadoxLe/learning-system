@@ -217,6 +217,20 @@
     <el-dialog v-model="videoVisible" title="🎬 视频播放" width="720px" destroy-on-close>
       <video v-if="videoUrl" :src="videoUrl" controls autoplay style="width:100%; border-radius:8px;" />
     </el-dialog>
+
+    <!-- Generating overlay -->
+    <teleport to="body">
+      <div v-if="generating" class="res-overlay">
+        <div class="res-modal">
+          <span class="res-spin">🤖</span>
+          <div class="res-title">多智能体协作生成中...</div>
+          <div class="res-sub">6个专业 Agent 正在并行工作，为你量身打造个性化学习资源</div>
+          <div class="res-dots">
+            <span class="res-dot" v-for="i in 4" :key="i" :style="{ animationDelay: (i-1)*0.15 + 's' }"></span>
+          </div>
+        </div>
+      </div>
+    </teleport>
   </div>
 </template>
 
@@ -386,7 +400,27 @@ function toggleHistoryExpand(id) {
   expandedHistory[id] = !expandedHistory[id]
 }
 
-function doExport(r) {
+async function doExport(r) {
+  const fmt = r.resource_type === 'mindmap' ? 'SVG 矢量图' : 'Markdown'
+  const icon = r.resource_type === 'mindmap' ? '🧩' : '📄'
+  try {
+    await ElMessageBox.confirm(
+      `<div class="export-msg">
+        <span class="export-msg-icon">${icon}</span>
+        <div class="export-msg-body">
+          <div class="export-msg-title">${r.title}</div>
+          <div class="export-msg-meta">导出格式：<b>${fmt}</b> · ${typeLabel(r.resource_type)}</div>
+        </div>
+      </div>`,
+      '确认导出',
+      {
+        confirmButtonText: '📥 导出',
+        cancelButtonText: '取消',
+        dangerouslyUseHTMLString: true,
+        customClass: 'export-confirm-dialog',
+      }
+    )
+  } catch { return }
   if (r.resource_type === 'mindmap') {
     exportMindmapJpg(r)
   } else {
@@ -500,9 +534,15 @@ function getMeta(r) { return r.metadata || {} }
 async function handleResComplete(r) {
   try {
     await ElMessageBox.confirm(
-      `确认已完成「${r.title}」的学习？该知识点将更新到画像中。`,
+      `<div class="export-msg">
+        <span class="export-msg-icon">✅</span>
+        <div class="export-msg-body">
+          <div class="export-msg-title">${r.title}</div>
+          <div class="export-msg-meta">确认完成该资源的学习？知识点将更新到学习画像中。</div>
+        </div>
+      </div>`,
       '确认完成',
-      { confirmButtonText: '确认', cancelButtonText: '取消', type: 'success' }
+      { confirmButtonText: '✅ 确认完成', cancelButtonText: '取消', dangerouslyUseHTMLString: true, customClass: 'export-confirm-dialog' }
     )
   } catch { return }
 
@@ -524,9 +564,15 @@ async function handleResComplete(r) {
 async function handleResDelete(r) {
   try {
     await ElMessageBox.confirm(
-      `确认删除「${r.title}」？此操作不可恢复。`,
+      `<div class="export-msg">
+        <span class="export-msg-icon">🗑️</span>
+        <div class="export-msg-body">
+          <div class="export-msg-title">${r.title}</div>
+          <div class="export-msg-meta">确认删除该资源？<b>此操作不可恢复</b>。</div>
+        </div>
+      </div>`,
       '删除资源',
-      { confirmButtonText: '删除', cancelButtonText: '取消', type: 'warning' }
+      { confirmButtonText: '🗑️ 删除', cancelButtonText: '取消', dangerouslyUseHTMLString: true, customClass: 'export-confirm-dialog' }
     )
   } catch { return }
 
@@ -574,8 +620,8 @@ onMounted(async () => {
 .resources-page {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 100px);
-  padding: 0 1.2rem 0.8rem;
+  height: 100%;
+  padding: 0.6rem 1.2rem 0.8rem;
 }
 
 .resources-main {
@@ -587,7 +633,7 @@ onMounted(async () => {
 
 /* ===== Left: Config ===== */
 .config-panel {
-  width: 300px;
+  width: 380px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -639,7 +685,6 @@ onMounted(async () => {
   border-radius: 8px;
   padding: 0.85rem 1rem;
   box-shadow: 0 1px 4px rgba(60, 48, 40, 0.05);
-  flex: 1;
   border: 1px solid #E8E0D5;
 }
 
@@ -718,6 +763,7 @@ onMounted(async () => {
   flex-direction: column;
   gap: 0.6rem;
   min-width: 0;
+  min-height: 0;
 }
 
 .section-title-row {
@@ -739,7 +785,7 @@ onMounted(async () => {
 .result-cards {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.75rem;
 }
 
 .result-card {
@@ -748,7 +794,7 @@ onMounted(async () => {
   box-shadow: 0 1px 4px rgba(60, 48, 40, 0.05);
   overflow: hidden;
   border: 1px solid #E8E0D5;
-  border-left: 4px solid #D4C4A8;
+  border-left: 5px solid #D4C4A8;
 }
 
 .result-card.doc { border-left-color: #C8A25C; }
@@ -762,8 +808,8 @@ onMounted(async () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.45rem 0.7rem;
-  gap: 0.4rem;
+  padding: 0.6rem 0.85rem;
+  gap: 0.5rem;
   background: #FBF7F0;
 }
 
@@ -776,7 +822,7 @@ onMounted(async () => {
 }
 
 .result-type-badge {
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   font-weight: 600;
   color: #7A6E63;
   white-space: nowrap;
@@ -784,7 +830,7 @@ onMounted(async () => {
 }
 
 .result-name {
-  font-size: 0.85rem;
+  font-size: 0.92rem;
   font-weight: 600;
   color: #3C3028;
   overflow: hidden;
@@ -800,7 +846,7 @@ onMounted(async () => {
 
 .result-card-body {
   border-top: 1px solid #E8E0D5;
-  padding: 0.8rem 1rem;
+  padding: 1rem 1.2rem;
   overflow-y: auto;
 }
 
@@ -822,7 +868,7 @@ onMounted(async () => {
   margin: 0.5rem 0 0.3rem;
 }
 
-.result-card-body :deep(.markdown-content p) { margin: 0.3rem 0; font-size: 0.85rem; line-height: 1.7; }
+.result-card-body :deep(.markdown-content p) { margin: 0.3rem 0; font-size: 0.88rem; line-height: 1.75; }
 .result-card-body :deep(.markdown-content code) {
   background: #F5EDE0;
   padding: 1px 5px;
@@ -874,5 +920,78 @@ onMounted(async () => {
 .result-card-body :deep(.mermaid-fallback pre) {
   margin: 0;
   font-size: 0.8rem;
+}
+
+/* Generating overlay */
+.res-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(30, 20, 14, 0.5);
+  backdrop-filter: blur(5px);
+  animation: fadeIn 0.25s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.res-modal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+  background: #FFFEF9;
+  border-radius: 14px;
+  padding: 2.5rem 3rem;
+  box-shadow: 0 12px 48px rgba(30, 20, 14, 0.25);
+  border: 1px solid #E8E0D5;
+  text-align: center;
+}
+
+.res-spin {
+  font-size: 3rem;
+  animation: resBounce 0.8s ease-in-out infinite;
+}
+
+@keyframes resBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.res-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #3C3028;
+}
+
+.res-sub {
+  font-size: 0.82rem;
+  color: #7A6E63;
+  max-width: 320px;
+  line-height: 1.5;
+}
+
+.res-dots {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.2rem;
+}
+
+.res-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #C8A25C;
+  animation: dotBounce 0.8s ease-in-out infinite;
+}
+
+@keyframes dotBounce {
+  0%, 100% { transform: translateY(0); opacity: 0.4; }
+  50% { transform: translateY(-8px); opacity: 1; }
 }
 </style>

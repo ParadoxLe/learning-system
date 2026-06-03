@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.database import init_db
-from backend.routers import profile, resource, path, tutor, student, video, auth, library, plan, digital_human, blind_box, rag
+from backend.routers import profile, resource, path, tutor, student, video, auth, library, plan, digital_human, blind_box, rag, knowledge_graph, quiz
 
 
 app = FastAPI(
@@ -32,6 +32,8 @@ app.include_router(plan.router)
 app.include_router(digital_human.router)
 app.include_router(blind_box.router)
 app.include_router(rag.router)
+app.include_router(knowledge_graph.router)
+app.include_router(quiz.router)
 
 
 @app.on_event("startup")

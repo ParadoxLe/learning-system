@@ -246,7 +246,7 @@ function saveProfile(profile) {
   profileReady.value = true
   ElMessage.success('学习画像已生成！')
   sessionStorage.removeItem('_intro_shown')
-  setTimeout(() => { router.replace('/') }, 2000)
+  setTimeout(() => { router.replace('/welcome') }, 2000)
 }
 </script>
 

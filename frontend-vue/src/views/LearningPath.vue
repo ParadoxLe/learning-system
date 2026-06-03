@@ -76,35 +76,35 @@
 
           <!-- Nodes -->
           <div class="phase-nodes" v-show="expandedPhases[idx] !== false">
-            <div v-for="node in phase.nodes || []" :key="node.order" :class="['node-item', { 'node-done': node.completed }]">
-              <div class="node-left">
-                <span class="node-icon">{{ node.completed ? '✅' : (nodeIcons[node.type] || '📌') }}</span>
-                <div class="node-info">
-                  <div class="node-title-row">
-                    <span class="node-order">{{ node.order }}.</span>
-                    <span class="node-title">{{ node.title }}</span>
-                  </div>
-                  <div class="node-meta-row">
-                    <span class="node-duration">{{ node.duration_min || 0 }}min</span>
-                    <span :class="['res-tag', node.resource_type || 'doc']">{{ node.resource_type }}</span>
+            <template v-for="node in phase.nodes || []" :key="node.order">
+              <div :class="['node-item', { 'node-done': node.completed }]">
+                <div class="node-left">
+                  <span class="node-icon">{{ node.completed ? '✅' : (nodeIcons[node.type] || '📌') }}</span>
+                  <div class="node-info">
+                    <div class="node-title-row">
+                      <span class="node-order">{{ node.order }}.</span>
+                      <span class="node-title">{{ node.title }}</span>
+                    </div>
+                    <div class="node-meta-row">
+                      <span class="node-duration">{{ node.duration_min || 0 }}min</span>
+                      <span :class="['res-tag', node.resource_type || 'doc']">{{ node.resource_type }}</span>
+                    </div>
                   </div>
                 </div>
+                <div class="node-right">
+                  <el-button
+                    v-if="!node.completed"
+                    size="small"
+                    type="primary"
+                    plain
+                    :loading="completingNode === `${currentPathId}-${idx}-${node.order}`"
+                    @click.stop="handleComplete(currentPathId, idx, node)"
+                  >✓</el-button>
+                  <span v-else class="node-done-badge">✓</span>
+                </div>
               </div>
-              <div class="node-right">
-                <el-button
-                  v-if="!node.completed"
-                  size="small"
-                  type="primary"
-                  plain
-                  :loading="completingNode === `${currentPathId}-${idx}-${node.order}`"
-                  @click.stop="handleComplete(currentPathId, idx, node)"
-                >✓</el-button>
-                <span v-else class="node-done-badge">✓</span>
-              </div>
-            </div>
 
-            <!-- Linked resources -->
-            <div v-for="node in phase.nodes || []" :key="'lr-'+node.order">
+              <!-- Node extras: linked resources / books / links -->
               <div v-if="node.linked_resources && node.linked_resources.length > 0" class="node-extras">
                 <router-link
                   v-for="lr in node.linked_resources"
@@ -128,7 +128,7 @@
                   class="extra-tag link"
                 >🔗 {{ l.title }}</a>
               </div>
-            </div>
+            </template>
           </div>
 
           <div class="phase-toggle-bar" @click="togglePhase(idx)">
@@ -167,10 +167,26 @@
             </div>
           </template>
           <div class="history-body">
-            <p class="history-summary">
-              总时长 <b>{{ (p.path && p.path.total_duration_hours) || '?' }}h</b>
-              · {{ countAllNodes(p) }} 个节点
-            </p>
+            <!-- Progress bar for history path -->
+            <div class="history-progress-bar">
+              <div class="history-progress-info">
+                <span class="history-progress-meta">
+                  共 {{ countAllNodes(p) }} 个节点 ·
+                  {{ countCompletedNodes(p) }} 已完成 ·
+                  预计 {{ (p.path && p.path.total_duration_hours) || '?' }}h
+                </span>
+                <span class="history-progress-pct" :style="{ color: pathProgressPercent(p) === 100 ? '#3D7A5C' : '#C8A25C' }">
+                  {{ pathProgressPercent(p) }}%
+                </span>
+              </div>
+              <el-progress
+                :percentage="pathProgressPercent(p)"
+                :color="pathProgressPercent(p) === 100 ? '#3D7A5C' : '#C8A25C'"
+                :stroke-width="8"
+                :striped="p.status !== 'completed'"
+                :striped-flow="p.status !== 'completed'"
+              />
+            </div>
             <el-collapse>
               <el-collapse-item
                 v-for="(phase, pidx) in (p.path && p.path.phases) || []"
@@ -178,30 +194,57 @@
                 :title="`📌 阶段${phase.phase}：${phase.name}（${phase.duration_hours || 0}h, ${(phase.nodes || []).length}个节点）`"
               >
                 <div class="phase-goal small">🎯 {{ phase.goal }}</div>
-                <div v-for="node in phase.nodes || []" :key="node.order" :class="['node-item', { 'node-done': node.completed }]">
-                  <div class="node-left">
-                    <span class="node-icon">{{ node.completed ? '✅' : (nodeIcons[node.type] || '📌') }}</span>
-                    <div class="node-info">
-                      <div class="node-title-row">
-                        <span class="node-order">{{ node.order }}.</span>
-                        <span class="node-title">{{ node.title }}</span>
-                        <span class="node-duration">{{ node.duration_min || 0 }}min</span>
-                        <span :class="['res-tag', node.resource_type || 'doc']">{{ node.resource_type }}</span>
+                <template v-for="node in phase.nodes || []" :key="node.order">
+                  <div :class="['node-item', { 'node-done': node.completed }]">
+                    <div class="node-left">
+                      <span class="node-icon">{{ node.completed ? '✅' : (nodeIcons[node.type] || '📌') }}</span>
+                      <div class="node-info">
+                        <div class="node-title-row">
+                          <span class="node-order">{{ node.order }}.</span>
+                          <span class="node-title">{{ node.title }}</span>
+                          <span class="node-duration">{{ node.duration_min || 0 }}min</span>
+                          <span :class="['res-tag', node.resource_type || 'doc']">{{ node.resource_type }}</span>
+                        </div>
                       </div>
                     </div>
+                    <div class="node-right">
+                      <el-button
+                        v-if="!node.completed"
+                        size="small"
+                        type="primary"
+                        plain
+                        :loading="completingNode === `${p.id}-${pidx}-${node.order}`"
+                        @click.stop="handleComplete(p.id, pidx, node)"
+                      >✓ 完成</el-button>
+                      <span v-else class="node-done-badge">已完成</span>
+                    </div>
                   </div>
-                  <div class="node-right">
-                    <el-button
-                      v-if="!node.completed"
-                      size="small"
-                      type="primary"
-                      plain
-                      :loading="completingNode === `${p.id}-${pidx}-${node.order}`"
-                      @click.stop="handleComplete(p.id, pidx, node)"
-                    >✓ 完成</el-button>
-                    <span v-else class="node-done-badge">已完成</span>
+
+                  <!-- Node extras -->
+                  <div v-if="node.linked_resources && node.linked_resources.length > 0" class="node-extras">
+                    <router-link
+                      v-for="lr in node.linked_resources"
+                      :key="lr.id"
+                      :to="`/resources?id=${lr.id}`"
+                      class="extra-link"
+                    >📎 {{ lr.title }}</router-link>
                   </div>
-                </div>
+                  <div v-if="node.books && node.books.length > 0" class="node-extras">
+                    <span v-for="(b, bi) in node.books" :key="'b'+bi" class="extra-tag book">
+                      📚《{{ b.title }}》
+                    </span>
+                  </div>
+                  <div v-if="node.links && node.links.length > 0" class="node-extras">
+                    <a
+                      v-for="(l, li) in node.links"
+                      :key="'l'+li"
+                      :href="l.url"
+                      target="_blank"
+                      rel="noopener"
+                      class="extra-tag link"
+                    >🔗 {{ l.title }}</a>
+                  </div>
+                </template>
               </el-collapse-item>
             </el-collapse>
             <div v-if="p.path && p.path.advice" class="advice-box small">
@@ -218,6 +261,20 @@
       <h3>还没有学习路径</h3>
       <p>输入学习目标，让 PathAgent 为你规划专属学习路线</p>
     </div>
+
+    <!-- Loading overlay -->
+    <teleport to="body">
+      <div v-if="loading" class="path-overlay">
+        <div class="path-modal">
+          <span class="path-spin">🧭</span>
+          <div class="path-title">正在规划学习路径...</div>
+          <div class="path-sub">PathAgent 正在分析你的画像，匹配最佳学习资源，规划科学路线</div>
+          <div class="path-dots">
+            <span class="path-dot" v-for="i in 3" :key="i" :style="{ animationDelay: (i-1)*0.2 + 's' }"></span>
+          </div>
+        </div>
+      </div>
+    </teleport>
   </div>
 </template>
 
@@ -292,6 +349,17 @@ function countAllNodes(p) {
   return p.path.phases.reduce((s, ph) => s + (ph.nodes || []).length, 0)
 }
 
+function countCompletedNodes(p) {
+  if (!p.path?.phases) return 0
+  return p.path.phases.reduce((s, ph) => s + (ph.nodes || []).filter(n => n.completed).length, 0)
+}
+
+function pathProgressPercent(p) {
+  const total = countAllNodes(p)
+  if (total === 0) return 0
+  return Math.round((countCompletedNodes(p) / total) * 100)
+}
+
 async function generate() {
   if (!store.currentStudentId) { ElMessage.warning('请先创建学生'); return }
   if (!courseGoal.value.trim()) { ElMessage.warning('请输入学习目标'); return }
@@ -316,9 +384,15 @@ async function handleComplete(pathId, phaseIdx, node) {
   if (!store.currentStudentId) return
   try {
     await ElMessageBox.confirm(
-      `确认已完成「${node.title}」？该知识点将更新到学习画像中。`,
+      `<div class="export-msg">
+        <span class="export-msg-icon">✅</span>
+        <div class="export-msg-body">
+          <div class="export-msg-title">${node.title}</div>
+          <div class="export-msg-meta">确认完成该节点？知识点将更新到学习画像中。</div>
+        </div>
+      </div>`,
       '确认完成',
-      { confirmButtonText: '确认完成', cancelButtonText: '取消', type: 'success' }
+      { confirmButtonText: '✅ 确认完成', cancelButtonText: '取消', dangerouslyUseHTMLString: true, customClass: 'export-confirm-dialog' }
     )
   } catch { return }
 
@@ -343,9 +417,15 @@ async function handleComplete(pathId, phaseIdx, node) {
 async function handleDeletePath(p) {
   try {
     await ElMessageBox.confirm(
-      `确认删除「${p.title}」？`,
+      `<div class="export-msg">
+        <span class="export-msg-icon">🗑️</span>
+        <div class="export-msg-body">
+          <div class="export-msg-title">${p.title}</div>
+          <div class="export-msg-meta">确认删除该学习路径？<b>此操作不可恢复</b>。</div>
+        </div>
+      </div>`,
       '删除路径',
-      { confirmButtonText: '删除', cancelButtonText: '取消', type: 'warning' }
+      { confirmButtonText: '🗑️ 删除', cancelButtonText: '取消', dangerouslyUseHTMLString: true, customClass: 'export-confirm-dialog' }
     )
   } catch { return }
   try {
@@ -368,7 +448,7 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.lp-page { padding: 0 1.2rem 0.8rem; }
+.lp-page { padding: 0.6rem 1.2rem 0.8rem; }
 
 /* Goal section */
 .goal-section {
@@ -520,25 +600,69 @@ onMounted(async () => {
 
 .history-title-row {
   display: flex; justify-content: space-between; align-items: center;
-  width: 100%; padding-right: 0.5rem;
+  width: 100%; padding: 0.15rem 0.5rem 0.15rem 0;
 }
-.history-title-left { display: flex; align-items: center; gap: 0.5rem; }
-.history-status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.history-title-left { display: flex; align-items: center; gap: 0.6rem; }
+.history-status-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 .history-status-dot.done { background: #3D7A5C; }
 .history-status-dot.active { background: #C8A25C; animation: pulse-dot 2s infinite; }
-.history-title-text { font-weight: 600; color: #3C3028; }
-.history-title-meta { font-size: 0.72rem; color: #A89880; }
+.history-title-text { font-weight: 600; font-size: 0.9rem; color: #3C3028; }
+.history-title-meta { font-size: 0.78rem; color: #A89880; }
 .history-title-right { display: flex; align-items: center; gap: 0.5rem; }
-.history-status-tag { font-size: 0.7rem; padding: 2px 8px; border-radius: 4px; font-weight: 500; }
+.history-status-tag { font-size: 0.75rem; padding: 3px 10px; border-radius: 4px; font-weight: 500; }
 .history-status-tag.done { background: #f3f8f5; color: #3D7A5C; }
 .history-status-tag.active { background: rgba(200,162,92,0.1); color: #8B6F3D; }
 
-.history-body { padding: 0 0.5rem; }
-.history-summary { font-size: 0.82rem; color: #7A6E63; margin: 0.3rem 0 0.5rem; }
+.history-body { padding: 0.3rem 0.7rem; }
+.history-summary { font-size: 0.88rem; color: #7A6E63; margin: 0.3rem 0 0.6rem; }
+
+.history-progress-bar {
+  background: #FBF7F0;
+  border-radius: 6px;
+  padding: 0.6rem 0.8rem;
+  margin-bottom: 0.6rem;
+  border: 1px solid #E8E0D5;
+}
+.history-progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.4rem;
+}
+.history-progress-meta {
+  font-size: 0.75rem;
+  color: #7A6E63;
+}
+.history-progress-pct {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
 
 @keyframes pulse-dot {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.4; }
+}
+
+/* History collapse items */
+.history-section :deep(.el-collapse-item__header) {
+  height: auto !important;
+  min-height: 44px;
+  padding: 0.5rem 0.8rem;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+.history-section :deep(.el-collapse-item__wrap) {
+  border-bottom: none;
+}
+.history-body :deep(.el-collapse-item__header) {
+  height: auto !important;
+  min-height: 38px;
+  padding: 0.35rem 0.6rem;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+.history-body :deep(.el-collapse-item__content) {
+  padding: 0.3rem 0;
 }
 
 /* Empty state */
@@ -549,4 +673,77 @@ onMounted(async () => {
 .empty-icon { font-size: 3.5rem; margin-bottom: 0.5rem; }
 .empty-state h3 { margin: 0.5rem 0 0.2rem; color: #7A6E63; }
 .empty-state p { font-size: 0.85rem; color: #A89880; }
+
+/* Loading overlay */
+.path-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(30, 20, 14, 0.5);
+  backdrop-filter: blur(5px);
+  animation: fadeIn 0.25s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.path-modal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+  background: #FFFEF9;
+  border-radius: 14px;
+  padding: 2.5rem 3rem;
+  box-shadow: 0 12px 48px rgba(30, 20, 14, 0.25);
+  border: 1px solid #E8E0D5;
+  text-align: center;
+}
+
+.path-spin {
+  font-size: 3rem;
+  animation: pathPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pathPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.15); opacity: 0.7; }
+}
+
+.path-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #3C3028;
+}
+
+.path-sub {
+  font-size: 0.82rem;
+  color: #7A6E63;
+  max-width: 300px;
+  line-height: 1.5;
+}
+
+.path-dots {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.2rem;
+}
+
+.path-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #C8A25C;
+  animation: dotBounce 0.8s ease-in-out infinite;
+}
+
+@keyframes dotBounce {
+  0%, 100% { transform: translateY(0); opacity: 0.4; }
+  50% { transform: translateY(-8px); opacity: 1; }
+}
 </style>

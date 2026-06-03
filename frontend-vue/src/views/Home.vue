@@ -10,11 +10,11 @@
         </div>
       </div>
       <div class="dash-quick">
-        <el-button size="small" @click="$router.push('/profile')">🧠 画像</el-button>
-        <el-button size="small" @click="$router.push('/resources')">📄 生成资源</el-button>
-        <el-button size="small" @click="$router.push('/learning-path')">🗺️ 规划路径</el-button>
-        <el-button size="small" @click="$router.push('/tutoring')">🤖 辅导</el-button>
-        <el-button size="small" class="intro-btn" @click="showIntro = true">📚 系统介绍</el-button>
+        <el-button size="default" @click="$router.push('/profile')">🧠 画像</el-button>
+        <el-button size="default" @click="$router.push('/resources')">📄 生成资源</el-button>
+        <el-button size="default" @click="$router.push('/learning-path')">🗺️ 规划路径</el-button>
+        <el-button size="default" @click="$router.push('/tutoring')">🤖 辅导</el-button>
+        <el-button size="default" class="intro-btn" @click="$router.push('/welcome')">📚 系统介绍</el-button>
       </div>
     </div>
 
@@ -112,9 +112,9 @@
             </div>
           </div>
           <div class="plan-add-row">
-            <el-input v-model="newPlanTitle" placeholder="计划标题..." size="small" @keyup.enter="addNewPlan" class="plan-add-title" />
-            <el-input v-model="newPlanDesc" placeholder="描述（可选）" size="small" @keyup.enter="addNewPlan" class="plan-add-desc" />
-            <el-button size="small" @click="addNewPlan" :disabled="!newPlanTitle.trim()" class="plan-add-btn">+ 添加</el-button>
+            <el-input v-model="newPlanTitle" placeholder="计划标题..." size="default" @keyup.enter="addNewPlan" class="plan-add-title" />
+            <el-input v-model="newPlanDesc" placeholder="描述（可选）" size="default" @keyup.enter="addNewPlan" class="plan-add-desc" />
+            <el-button size="default" @click="addNewPlan" :disabled="!newPlanTitle.trim()" class="plan-add-btn">+ 添加</el-button>
           </div>
         </template>
         <div v-else class="plans-panel-empty">
@@ -163,85 +163,6 @@
       </div>
     </div>
 
-    <!-- System intro dialog -->
-    <el-dialog v-model="showIntro" title="" width="1050px" top="3vh" destroy-on-close class="intro-dialog-wrapper">
-      <div class="intro-dialog">
-        <div class="intro-top-ornament"></div>
-        <div class="intro-hero">
-          <span class="intro-hero-icon">📚</span>
-          <h2>多智能体个性化学习资源生成系统</h2>
-          <p>六个专业 AI Agent 协作，打造完整的个性化学习闭环</p>
-        </div>
-        <div class="intro-stat-row">
-          <div class="intro-stat">
-            <span class="intro-stat-val">10+</span>
-            <span class="intro-stat-lbl">专业智能体</span>
-          </div>
-          <div class="intro-stat">
-            <span class="intro-stat-val">6</span>
-            <span class="intro-stat-lbl">资源类型</span>
-          </div>
-          <div class="intro-stat">
-            <span class="intro-stat-val">6维</span>
-            <span class="intro-stat-lbl">学习画像</span>
-          </div>
-          <div class="intro-stat">
-            <span class="intro-stat-val">5</span>
-            <span class="intro-stat-lbl">核心功能模块</span>
-          </div>
-        </div>
-
-        <div class="intro-divider"><span class="divider-diamond">◆</span></div>
-
-        <div class="intro-feature-grid">
-          <div class="intro-feature" v-for="f in features" :key="f.icon">
-            <span class="intro-feat-icon">{{ f.icon }}</span>
-            <div class="intro-feat-body">
-              <h4>{{ f.title }}</h4>
-              <p>{{ f.desc }}</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="intro-divider"><span class="divider-diamond">◆</span></div>
-
-        <div class="intro-steps-label">快速开始</div>
-        <div class="intro-steps">
-          <div class="intro-step">
-            <span class="intro-step-num">1</span>
-            <span class="intro-step-text">构建画像 — 描述你的学习情况</span>
-          </div>
-          <span class="intro-step-arrow">→</span>
-          <div class="intro-step">
-            <span class="intro-step-num">2</span>
-            <span class="intro-step-text">生成资源 — 选择课程主题一键生成</span>
-          </div>
-          <span class="intro-step-arrow">→</span>
-          <div class="intro-step">
-            <span class="intro-step-num">3</span>
-            <span class="intro-step-text">规划路径 — 获取科学学习路线图</span>
-          </div>
-          <span class="intro-step-arrow">→</span>
-          <div class="intro-step">
-            <span class="intro-step-num">4</span>
-            <span class="intro-step-text">开始学习 — 辅导+评估闭环提升</span>
-          </div>
-        </div>
-
-        <el-collapse style="margin-top:1.2rem;">
-          <el-collapse-item title="🔍 多智能体架构一览">
-            <el-table :data="agents" stripe size="small">
-              <el-table-column prop="icon" label="" width="50" />
-              <el-table-column prop="name" label="智能体" width="180" />
-              <el-table-column prop="role" label="角色定位" />
-              <el-table-column prop="ability" label="核心能力" />
-            </el-table>
-          </el-collapse-item>
-        </el-collapse>
-
-        <div class="intro-bottom-ornament"></div>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
@@ -265,15 +186,8 @@ const todayPlans = ref([])
 const resourceCount = ref(0)
 const pathCount = ref(0)
 
-const showIntro = ref(false)
 const newPlanTitle = ref('')
 const newPlanDesc = ref('')
-
-const INTRO_KEY = '_intro_shown'
-if (!sessionStorage.getItem(INTRO_KEY)) {
-  showIntro.value = true
-  sessionStorage.setItem(INTRO_KEY, '1')
-}
 
 const todayStr = computed(() => {
   const now = new Date()
@@ -392,7 +306,17 @@ async function togglePlan(p) {
 
 async function handlePlanDelete(p) {
   try {
-    await ElMessageBox.confirm(`删除计划「${p.title}」？`, '确认', { type: 'warning' })
+    await ElMessageBox.confirm(
+      `<div class="export-msg">
+        <span class="export-msg-icon">🗑️</span>
+        <div class="export-msg-body">
+          <div class="export-msg-title">${p.title}</div>
+          <div class="export-msg-meta">确认删除该学习计划？<b>此操作不可恢复</b>。</div>
+        </div>
+      </div>`,
+      '删除计划',
+      { confirmButtonText: '🗑️ 删除', cancelButtonText: '取消', dangerouslyUseHTMLString: true, customClass: 'export-confirm-dialog' }
+    )
     await deletePlan(p.id, store.currentStudentId)
     const d = p.plan_date
     plansMap.value[d] = plansMap.value[d].filter(x => x.id !== p.id)
@@ -409,35 +333,15 @@ onMounted(async () => {
   }
 })
 
-const features = [
-  { icon: '🧠', title: '对话式学习画像构建', desc: '摒弃传统表单，通过自然语言对话自动抽取6维学习特征。涵盖知识基础、认知风格、学习节奏、模态偏好、易错模式、动机因素。' },
-  { icon: '🤖', title: '多智能体协同资源生成', desc: '10+专业智能体各司其职，协作生成课程文档、思维导图、练习题、拓展阅读、视频脚本、代码案例等6类个性化资源。' },
-  { icon: '🗺️', title: '个性化学习路径规划', desc: '基于学生画像和资源库，智能规划科学学习路径。分阶段、分类型安排学习节点，持续跟踪进度。' },
-  { icon: '💡', title: '多模态智能辅导', desc: '文字解答 + 图解说明 + 类比讲解 + 举一反三。TutorAgent根据学生认知风格调整讲解方式。' },
-  { icon: '📊', title: '精准学习效果评估', desc: '多维度评估知识掌握度、进步趋势、薄弱环节、学习效率、资源适配度。自动生成改进建议。' },
-]
-
-const agents = [
-  { icon: '🎯', name: 'Orchestrator', role: '主编排协调者', ability: '意图识别、任务分发、结果汇总' },
-  { icon: '🧠', name: 'ProfileAgent', role: '学习画像分析师', ability: '对话式画像采集、6维特征提取、画像更新' },
-  { icon: '📝', name: 'DocAgent', role: '课程文档专家', ability: '自适应难度、根据认知风格调整讲解方式' },
-  { icon: '🧩', name: 'MindMapAgent', role: '知识结构设计师', ability: 'Mermaid思维导图、模块化知识拆解' },
-  { icon: '✏️', name: 'ExerciseAgent', role: '题库设计专家', ability: '4种题型、针对易错点、难度分级' },
-  { icon: '📖', name: 'ReadingAgent', role: '拓展阅读推荐师', ability: '三级阅读推荐、个性化阅读路线' },
-  { icon: '🎬', name: 'VideoAgent', role: '教学视频编导', ability: '分镜脚本、可视化方案、互动设计' },
-  { icon: '💻', name: 'CodeAgent', role: '编程案例导师', ability: '实战项目、分步实现、扩展挑战' },
-  { icon: '🗺️', name: 'PathAgent', role: '学习路径规划师', ability: '阶段化路径、资源匹配、时长规划' },
-  { icon: '🤖', name: 'TutorAgent', role: '智能辅导老师', ability: '多模态答疑、认知风格适配' },
-  { icon: '📊', name: 'AssessmentAgent', role: '学习评估分析师', ability: '6维评估、趋势分析、改进建议' },
-]
 </script>
 
 <style scoped>
 .dashboard {
   display: flex;
   flex-direction: column;
-  padding: 0 1.2rem 0.8rem;
-  gap: 0.65rem;
+  padding: 0.6rem 1.5rem 1rem;
+  gap: 1rem;
+  min-height: 100%;
 }
 
 /* ===== Top bar ===== */
@@ -455,8 +359,8 @@ const agents = [
 }
 
 .greeting-ornament {
-  width: 4px;
-  height: 36px;
+  width: 5px;
+  height: 44px;
   border-radius: 2px;
   background: linear-gradient(180deg, #C8A25C, #8B6F3D);
   flex-shrink: 0;
@@ -468,7 +372,7 @@ const agents = [
 }
 
 .greeting-text h1 {
-  font-size: 1.3rem;
+  font-size: 1.6rem;
   font-weight: 700;
   color: #3C3028;
   margin: 0;
@@ -476,19 +380,20 @@ const agents = [
 }
 
 .today-label {
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   color: #A89880;
 }
 
 .dash-quick {
   display: flex;
-  gap: 0.35rem;
+  gap: 0.45rem;
 }
 
 .dash-quick :deep(.el-button) {
   border-radius: 6px;
-  font-size: 0.78rem;
+  font-size: 0.88rem;
   font-weight: 500;
+  height: 38px;
   border: 1px solid #D4C4A8;
   color: #5C4F42;
   background: #FFFEF9;
@@ -514,17 +419,17 @@ const agents = [
 /* ===== Stats row ===== */
 .dash-stats {
   display: flex;
-  gap: 0.9rem;
+  gap: 1rem;
 }
 
 .dash-stat {
   flex: 1;
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.8rem;
   background: #FFFEF9;
-  border-radius: 8px;
-  padding: 0.7rem 0.9rem;
+  border-radius: 10px;
+  padding: 0.95rem 1.1rem;
   box-shadow: 0 1px 3px rgba(60, 48, 40, 0.04);
   cursor: pointer;
   transition: transform 0.15s, box-shadow 0.15s;
@@ -542,9 +447,9 @@ const agents = [
   position: absolute;
   top: 0;
   left: 0;
-  width: 3px;
+  width: 4px;
   height: 100%;
-  border-radius: 3px 0 0 3px;
+  border-radius: 4px 0 0 4px;
 }
 
 .stat-accent.a1 { background: #C8A25C; }
@@ -553,19 +458,19 @@ const agents = [
 .stat-accent.a4 { background: #722F37; }
 
 .dash-stat-icon {
-  font-size: 1.3rem;
+  font-size: 1.6rem;
   flex-shrink: 0;
-  margin-left: 0.15rem;
+  margin-left: 0.2rem;
 }
 
 .dash-stat-info {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 2px;
 }
 
 .dash-stat-val {
-  font-size: 0.95rem;
+  font-size: 1.15rem;
   font-weight: 700;
   color: #3C3028;
 }
@@ -574,25 +479,23 @@ const agents = [
 .dash-stat-val.val-amber { color: #C8963E; }
 
 .dash-stat-lbl {
-  font-size: 0.72rem;
+  font-size: 0.82rem;
   color: #7A6E63;
 }
 
 /* ===== Main: calendar + plans ===== */
 .dash-main {
-  flex: 1;
   display: flex;
-  gap: 1.2rem;
-  min-height: 0;
+  gap: 1.5rem;
 }
 
 /* Calendar */
 .calendar-card {
   background: #FFFEF9;
   border-radius: 10px;
-  padding: 0.85rem 0.9rem;
+  padding: 1rem 1.1rem;
   box-shadow: 0 1px 4px rgba(60, 48, 40, 0.05);
-  width: 300px;
+  width: 360px;
   flex-shrink: 0;
   align-self: flex-start;
   border: 1px solid #E8E0D5;
@@ -602,17 +505,17 @@ const agents = [
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 0.6rem;
+  margin-bottom: 0.7rem;
 }
 
 .cal-nav-btn {
-  width: 26px !important;
-  height: 26px !important;
-  min-width: 26px !important;
+  width: 30px !important;
+  height: 30px !important;
+  min-width: 30px !important;
   border: 1px solid #D4C4A8 !important;
   color: #7A6E63 !important;
   background: #FBF7F0 !important;
-  font-size: 0.65rem !important;
+  font-size: 0.72rem !important;
 }
 
 .cal-nav-btn:hover {
@@ -622,7 +525,7 @@ const agents = [
 }
 
 .cal-month {
-  font-size: 0.88rem;
+  font-size: 0.98rem;
   font-weight: 700;
   color: #3C3028;
   letter-spacing: 0.03em;
@@ -632,20 +535,20 @@ const agents = [
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   text-align: center;
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.25rem;
 }
 
 .cal-wd {
-  font-size: 0.65rem;
+  font-size: 0.72rem;
   font-weight: 600;
   color: #B8A088;
-  padding: 0.2rem 0;
+  padding: 0.25rem 0;
 }
 
 .cal-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 1px;
+  gap: 2px;
 }
 
 .cal-cell {
@@ -658,7 +561,7 @@ const agents = [
   cursor: pointer;
   position: relative;
   transition: background 0.15s;
-  font-size: 0.78rem;
+  font-size: 0.85rem;
   color: #5C4F42;
 }
 
@@ -711,11 +614,10 @@ const agents = [
   flex: 1;
   background: #FFFEF9;
   border-radius: 10px;
-  padding: 0.9rem 1.1rem;
+  padding: 1rem 1.3rem;
   box-shadow: 0 1px 4px rgba(60, 48, 40, 0.05);
   display: flex;
   flex-direction: column;
-  min-height: 300px;
   border: 1px solid #E8E0D5;
 }
 
@@ -729,8 +631,8 @@ const agents = [
 }
 
 .empty-cal-icon-wrap {
-  width: 72px;
-  height: 72px;
+  width: 84px;
+  height: 84px;
   border-radius: 50%;
   background: linear-gradient(135deg, #FBF7F0, #F5EDE0);
   display: flex;
@@ -741,17 +643,17 @@ const agents = [
 }
 
 .empty-cal-icon {
-  font-size: 2rem;
+  font-size: 2.4rem;
 }
 
 .empty-cal-text {
-  font-size: 0.9rem;
+  font-size: 1rem;
   color: #7A6E63;
   font-weight: 500;
 }
 
 .empty-cal-sub {
-  font-size: 0.78rem;
+  font-size: 0.85rem;
   color: #B8A088;
 }
 
@@ -760,38 +662,38 @@ const agents = [
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.5rem;
-  padding-bottom: 0.5rem;
+  margin-bottom: 0.6rem;
+  padding-bottom: 0.6rem;
   border-bottom: 1.5px solid #F5EDE0;
 }
 
 .plans-header-left {
   display: flex;
   align-items: baseline;
-  gap: 0.35rem;
+  gap: 0.4rem;
 }
 
 .plans-date-icon {
-  font-size: 1.1rem;
+  font-size: 1.3rem;
 }
 
 .plans-date-text {
-  font-size: 1rem;
+  font-size: 1.15rem;
   font-weight: 700;
   color: #3C3028;
 }
 
 .plans-date-weekday {
-  font-size: 0.78rem;
+  font-size: 0.85rem;
   color: #A89880;
   font-weight: 400;
 }
 
 .plan-count {
-  font-size: 0.75rem;
+  font-size: 0.82rem;
   color: #8B6F3D;
   background: rgba(200, 162, 92, 0.1);
-  padding: 0.2rem 0.7rem;
+  padding: 0.25rem 0.8rem;
   border-radius: 10px;
   font-weight: 500;
 }
@@ -802,16 +704,16 @@ const agents = [
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.45rem;
 }
 
 .plan-item {
   display: flex;
   align-items: center;
-  padding: 0.45rem 0.55rem 0.45rem 0;
+  padding: 0.55rem 0.65rem 0.55rem 0;
   border-radius: 6px;
   background: #FBF7F0;
-  gap: 0.4rem;
+  gap: 0.5rem;
   transition: all 0.15s;
   overflow: hidden;
   border: 1px solid transparent;
@@ -830,7 +732,7 @@ const agents = [
 
 .plan-accent {
   width: 3px;
-  height: 28px;
+  height: 32px;
   border-radius: 0 3px 3px 0;
   flex-shrink: 0;
 }
@@ -838,7 +740,7 @@ const agents = [
 .plan-left {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.55rem;
   flex: 1;
   min-width: 0;
   cursor: pointer;
@@ -846,7 +748,7 @@ const agents = [
 }
 
 .plan-check-dot {
-  font-size: 0.9rem;
+  font-size: 1rem;
   flex-shrink: 0;
   opacity: 0.5;
   transition: opacity 0.15s;
@@ -864,7 +766,7 @@ const agents = [
 }
 
 .plan-item-title {
-  font-size: 0.85rem;
+  font-size: 0.92rem;
   font-weight: 600;
   color: #3C3028;
 }
@@ -875,12 +777,12 @@ const agents = [
 }
 
 .plan-item-desc {
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   color: #A89880;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 260px;
+  max-width: 300px;
 }
 
 .plan-right {
@@ -901,7 +803,7 @@ const agents = [
 }
 
 .plan-del-icon {
-  font-size: 0.85rem;
+  font-size: 0.95rem;
 }
 
 /* Plan empty */
@@ -910,31 +812,31 @@ const agents = [
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.2rem;
-  padding: 2.5rem 0;
+  gap: 0.25rem;
+  padding: 3rem 0;
 }
 
 .plan-empty-icon {
-  font-size: 2rem;
+  font-size: 2.5rem;
 }
 
 .plan-empty-text {
-  font-size: 0.85rem;
+  font-size: 0.92rem;
   color: #B8A088;
 }
 
 .plan-empty-hint {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   color: #D4C4A8;
 }
 
 /* Plan add row */
 .plan-add-row {
   display: flex;
-  gap: 0.4rem;
-  padding-top: 0.5rem;
+  gap: 0.5rem;
+  padding-top: 0.6rem;
   border-top: 1.5px solid #F5EDE0;
-  margin-top: 0.4rem;
+  margin-top: 0.5rem;
 }
 
 .plan-add-title {
@@ -947,12 +849,13 @@ const agents = [
 
 .plan-add-btn {
   flex-shrink: 0;
-  min-width: 80px;
+  min-width: 90px;
   background: linear-gradient(135deg, #C8A25C, #B8934F);
   border: none;
   color: #fff;
   font-weight: 500;
   border-radius: 6px;
+  font-size: 0.88rem;
   transition: all 0.2s;
 }
 
@@ -968,11 +871,14 @@ const agents = [
 
 /* ===== Today's Tasks ===== */
 .today-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   background: #FFFEF9;
   border-radius: 10px;
-  padding: 0.9rem 1.2rem;
+  padding: 1.1rem 1.4rem;
   box-shadow: 0 1px 4px rgba(60, 48, 40, 0.05);
-  min-height: 140px;
+  min-height: 160px;
   border: 1px solid #E8E0D5;
 }
 
@@ -980,58 +886,59 @@ const agents = [
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.5rem;
-  padding-bottom: 0.5rem;
+  margin-bottom: 0.6rem;
+  padding-bottom: 0.6rem;
   border-bottom: 1.5px solid #F5EDE0;
 }
 
 .today-title-row {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.55rem;
 }
 
 .today-icon {
-  font-size: 1.2rem;
+  font-size: 1.4rem;
 }
 
 .today-title {
-  font-size: 1rem;
+  font-size: 1.15rem;
   font-weight: 700;
   color: #3C3028;
 }
 
 .today-date-badge {
-  font-size: 0.75rem;
+  font-size: 0.82rem;
   color: #7A6E63;
   background: #F5EDE0;
-  padding: 0.15rem 0.6rem;
+  padding: 0.2rem 0.7rem;
   border-radius: 4px;
 }
 
 .today-progress-badge {
-  font-size: 0.78rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: #8B6F3D;
   background: rgba(200, 162, 92, 0.12);
-  padding: 0.3rem 0.8rem;
+  padding: 0.35rem 0.9rem;
   border-radius: 10px;
   border: 1px solid rgba(200, 162, 92, 0.2);
 }
 
 .today-task-list {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 0.45rem;
+  gap: 0.55rem;
 }
 
 .today-task-card {
   display: flex;
   align-items: center;
-  padding: 0.6rem 0.7rem 0.6rem 0;
+  padding: 0.7rem 0.8rem 0.7rem 0;
   border-radius: 6px;
   background: #FBF7F0;
-  gap: 0.5rem;
+  gap: 0.55rem;
   transition: all 0.15s;
   overflow: hidden;
   border: 1px solid #EDE5D5;
@@ -1050,8 +957,8 @@ const agents = [
 }
 
 .task-accent {
-  width: 3px;
-  height: 26px;
+  width: 4px;
+  height: 30px;
   border-radius: 0 3px 3px 0;
   flex-shrink: 0;
 }
@@ -1059,7 +966,7 @@ const agents = [
 .task-left {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.55rem;
   flex: 1;
   min-width: 0;
   cursor: pointer;
@@ -1067,7 +974,7 @@ const agents = [
 }
 
 .task-check-dot {
-  font-size: 0.9rem;
+  font-size: 1rem;
   flex-shrink: 0;
   opacity: 0.5;
   transition: opacity 0.15s;
@@ -1082,11 +989,11 @@ const agents = [
   flex-direction: column;
   min-width: 0;
   flex: 1;
-  gap: 0.1rem;
+  gap: 0.12rem;
 }
 
 .task-title {
-  font-size: 0.85rem;
+  font-size: 0.92rem;
   font-weight: 600;
   color: #3C3028;
 }
@@ -1097,7 +1004,7 @@ const agents = [
 }
 
 .task-desc {
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   color: #A89880;
 }
 
@@ -1119,220 +1026,31 @@ const agents = [
 }
 
 .task-del-icon {
-  font-size: 0.9rem;
+  font-size: 1rem;
 }
 
 /* Today empty */
 .today-empty {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.3rem;
-  padding: 2rem 0;
+  justify-content: center;
+  gap: 0.35rem;
 }
 
 .today-empty-icon {
-  font-size: 2.5rem;
+  font-size: 3rem;
 }
 
 .today-empty-text {
-  font-size: 0.9rem;
+  font-size: 1rem;
   color: #B8A088;
   font-weight: 500;
 }
 
 .today-empty-hint {
-  font-size: 0.78rem;
-  color: #D4C4A8;
-}
-
-/* ===== System intro dialog ===== */
-.intro-dialog-wrapper :deep(.el-dialog) {
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.intro-dialog-wrapper :deep(.el-dialog__header) {
-  display: none;
-}
-
-.intro-dialog-wrapper :deep(.el-dialog__body) {
-  padding: 0;
-}
-
-.intro-dialog {
-  display: flex;
-  flex-direction: column;
-  position: relative;
-}
-
-.intro-top-ornament {
-  height: 4px;
-  background: linear-gradient(90deg, transparent 0%, #C8A25C 20%, #D4B86C 50%, #C8A25C 80%, transparent 100%);
-}
-
-.intro-bottom-ornament {
-  height: 4px;
-  background: linear-gradient(90deg, transparent 0%, #C8A25C 20%, #D4B86C 50%, #C8A25C 80%, transparent 100%);
-  margin-top: 1rem;
-}
-
-.intro-hero {
-  text-align: center;
-  padding: 2rem 2rem 0.5rem;
-  background: linear-gradient(180deg, #FBF7F0, #FFFEF9);
-}
-
-.intro-hero-icon {
-  font-size: 3rem;
-}
-
-.intro-hero h2 {
-  font-size: 1.35rem;
-  font-weight: 700;
-  color: #3C3028;
-  margin: 0.5rem 0 0.2rem;
-  letter-spacing: 0.03em;
-}
-
-.intro-hero p {
-  font-size: 0.88rem;
-  color: #7A6E63;
-  margin: 0;
-}
-
-.intro-stat-row {
-  display: flex;
-  gap: 0.8rem;
-  padding: 0 2rem;
-}
-
-.intro-stat {
-  flex: 1;
-  background: #FBF7F0;
-  border-radius: 8px;
-  padding: 0.8rem;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  border: 1px solid #E8E0D5;
-}
-
-.intro-stat-val {
-  font-size: 1.6rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #C8A25C, #B8934F);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.intro-stat-lbl {
-  font-size: 0.75rem;
-  color: #7A6E63;
-}
-
-.intro-divider {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem 0 0.5rem;
-}
-
-.divider-diamond {
-  color: #D4C4A8;
-  font-size: 0.5rem;
-}
-
-.intro-feature-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 0.45rem;
-  padding: 0 2rem;
-}
-
-.intro-feature {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.6rem;
-  background: #FBF7F0;
-  border-radius: 8px;
-  padding: 0.7rem 0.9rem;
-  border: 1px solid #EDE5D5;
-  transition: all 0.2s;
-}
-
-.intro-feature:hover {
-  border-color: #D4C4A8;
-  background: #FFFEF9;
-}
-
-.intro-feat-icon {
-  font-size: 1.4rem;
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-
-.intro-feat-body h4 {
-  margin: 0;
   font-size: 0.85rem;
-  color: #3C3028;
-  font-weight: 600;
-}
-
-.intro-feat-body p {
-  margin: 0.1rem 0 0 0;
-  font-size: 0.76rem;
-  color: #7A6E63;
-  line-height: 1.45;
-}
-
-.intro-steps-label {
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: #3C3028;
-  padding: 0 2rem 0.7rem;
-}
-
-.intro-steps {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  padding: 0 2rem;
-  flex-wrap: wrap;
-}
-
-.intro-step {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  background: #FBF7F0;
-  border-radius: 8px;
-  padding: 0.4rem 0.8rem;
-  border: 1px solid #E8E0D5;
-}
-
-.intro-step-num {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #C8A25C, #B8934F);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 0.72rem;
-  flex-shrink: 0;
-}
-
-.intro-step-text {
-  font-size: 0.78rem;
-  color: #5C4F42;
-}
-
-.intro-step-arrow {
   color: #D4C4A8;
-  font-size: 0.9rem;
 }
 </style>

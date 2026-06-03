@@ -167,7 +167,7 @@ async function handleLogin() {
   try {
     await auth.login(username.value.trim(), password.value, captchaId.value, captchaInput.value.trim())
     ElMessage.success('登录成功')
-    router.push('/')
+    router.push('/welcome')
   } catch (e) {
     const msg = e.response?.data?.detail
     ElMessage({ message: Array.isArray(msg) ? msg.map(m => m.msg).join('；') : (msg || '登录失败'), type: 'error', duration: 4000 })

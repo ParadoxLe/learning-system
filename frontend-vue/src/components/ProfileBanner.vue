@@ -2,7 +2,7 @@
   <div v-if="hasProfile && profile" class="profile-banner">
     <span style="font-size:1.3rem;">🧠</span>
     <span class="badge">当前画像驱动</span>
-    <span v-for="dim in dimensions" :key="dim.label" style="font-size:0.82rem;color:#555;white-space:nowrap;">
+    <span v-for="dim in dimensions" :key="dim.label" style="font-size:0.82rem;color:#7A6E63;white-space:nowrap;">
       {{ dim.label }}: <strong>{{ dim.value }}</strong>
     </span>
   </div>

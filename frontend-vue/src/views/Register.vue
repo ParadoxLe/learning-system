@@ -184,7 +184,7 @@ async function handleRegister() {
   try {
     await auth.register(u, password.value, captchaId.value, c)
     ElMessage.success('注册成功')
-    router.push('/')
+    router.push('/welcome')
   } catch (err) {
     ElMessage({ message: err.response?.data?.detail || '注册失败', type: 'error', duration: 4000 })
     refreshCaptcha()

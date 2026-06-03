@@ -99,7 +99,7 @@ function closeModal() {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 0.5rem;
+  margin: 0 0.7rem 0.5rem;
   position: relative;
   overflow: hidden;
   transition: all 0.3s ease;

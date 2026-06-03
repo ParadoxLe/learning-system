@@ -127,11 +127,17 @@ async function handleUpdatePassword() {
   if (pwdForm.newPassword !== pwdForm.confirmPassword) { ElMessage.warning('两次输入的新密码不一致'); return }
 
   try {
-    await ElMessageBox.confirm('确认修改密码？', '确认', {
-      confirmButtonText: '确认修改',
-      cancelButtonText: '取消',
-      type: 'warning',
-    })
+    await ElMessageBox.confirm(
+      `<div class="export-msg">
+        <span class="export-msg-icon">🔒</span>
+        <div class="export-msg-body">
+          <div class="export-msg-title">修改登录密码</div>
+          <div class="export-msg-meta">确认修改密码？修改后需使用新密码重新登录。</div>
+        </div>
+      </div>`,
+      '确认修改',
+      { confirmButtonText: '🔒 确认修改', cancelButtonText: '取消', dangerouslyUseHTMLString: true, customClass: 'export-confirm-dialog' }
+    )
   } catch {
     return // user cancelled
   }

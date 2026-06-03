@@ -103,6 +103,20 @@
 
       </div>
     </div>
+
+    <!-- Loading overlay -->
+    <teleport to="body">
+      <div v-if="loading" class="assess-overlay">
+        <div class="assess-modal">
+          <span class="assess-spin">⏳</span>
+          <div class="assess-title">正在评估中...</div>
+          <div class="assess-sub">AI 正在分析你的学习画像，生成多维度评估报告</div>
+          <div class="assess-dots">
+            <span class="assess-dot" v-for="i in 3" :key="i" :style="{ animationDelay: (i-1)*0.2 + 's' }"></span>
+          </div>
+        </div>
+      </div>
+    </teleport>
   </div>
 </template>
 
@@ -321,7 +335,7 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   height: calc(100vh - 100px);
-  padding: 0 1.2rem 0.8rem;
+  padding: 0.6rem 1.2rem 0.8rem;
 }
 
 .assessment-main {
@@ -385,7 +399,7 @@ onUnmounted(() => {
 
 /* ===== Side area ===== */
 .side-area {
-  width: 400px;
+  width: 480px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -529,5 +543,78 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
   margin-top: 1px;
+}
+
+/* Loading overlay */
+.assess-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(30, 20, 14, 0.5);
+  backdrop-filter: blur(5px);
+  animation: fadeIn 0.25s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.assess-modal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+  background: #FFFEF9;
+  border-radius: 14px;
+  padding: 2.5rem 3rem;
+  box-shadow: 0 12px 48px rgba(30, 20, 14, 0.25);
+  border: 1px solid #E8E0D5;
+  text-align: center;
+}
+
+.assess-spin {
+  font-size: 3rem;
+  animation: spin 1.2s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.assess-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #3C3028;
+}
+
+.assess-sub {
+  font-size: 0.82rem;
+  color: #7A6E63;
+  max-width: 280px;
+  line-height: 1.5;
+}
+
+.assess-dots {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.2rem;
+}
+
+.assess-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #C8A25C;
+  animation: dotBounce 0.8s ease-in-out infinite;
+}
+
+@keyframes dotBounce {
+  0%, 100% { transform: translateY(0); opacity: 0.4; }
+  50% { transform: translateY(-8px); opacity: 1; }
 }
 </style>
